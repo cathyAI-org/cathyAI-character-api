@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  characters_api:
+    build: .
+    container_name: cathyai-characters-api
+    ports:
+      - "8090:8090"
+    volumes:
+      - ./characters:/app/characters:ro
+      - ./public:/app/public:ro
+    env_file:
+      - .env
+    restart: unless-stopped

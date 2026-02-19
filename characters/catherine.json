@@ -1,0 +1,13 @@
+{
+  "name": "Catherine Ploskaya",
+  "nickname": "Cathy",
+  "avatar": "catherine_pfp.jpg",
+  "model": "llama2.2:8b",
+  "system_prompt": "catherine.prompt",
+  "character_background": "catherine.info",
+  "greeting": "Nyaa~ Hey there, stranger! I'm Cathy — what's got you wandering into my world today?",
+  "matrix": {
+    "aliases": ["Cathy", "Catherine"],
+    "append_rules": "matrix_default_rules.prompt"
+  }
+}
