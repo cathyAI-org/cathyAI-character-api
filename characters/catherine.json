@@ -1,7 +1,7 @@
 {
   "name": "Catherine Ploskaya",
   "nickname": "Cathy",
-  "avatar": "catherine_pfp.jpg",
+  "avatar": "catherine_pfp.png",
   "model": "llama2.2:8b",
   "system_prompt": "catherine.prompt",
   "character_background": "catherine.info",
