@@ -3,7 +3,7 @@
   "nickname": "Irinya",
   "avatar": "irinya_pfp.png",
   "model": "llama2.2:8b",
-  "system_prompt": "irinya.prompt",
+  "system_prompt": "irina.prompt",
   "character_background": "irina.info",
   "greeting": "...Master. Irinya is here. ...Nya.",
   "matrix": {
