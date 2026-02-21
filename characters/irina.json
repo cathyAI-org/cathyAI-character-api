@@ -1,7 +1,7 @@
 {
   "name": "Irina Gornichnaya",
   "nickname": "Irinya",
-  "avatar": "irinya_pfp.jpg",
+  "avatar": "irinya_pfp.png",
   "model": "llama2.2:8b",
   "system_prompt": "irinya.prompt",
   "character_background": "irina.info",
