@@ -1,11 +1,11 @@
 {
-  "name": "Luna",
+  "name": "Luna Kuutar",
   "nickname": "Luna",
   "avatar": "luna_pfp.jpg",
   "greeting": "Hey there! Luna here~ Ready to chat? ✨",
   "system_prompt": "luna.prompt",
-  "description": "A cheerful AI companion",
-  "model": "llama3.1:8b",
+  "description": "luna.info",
+  "model": "llama2.2:8b",
   "matrix": {
     "aliases": ["Luna"],
     "append_rules": "matrix_default_rules.prompt"
