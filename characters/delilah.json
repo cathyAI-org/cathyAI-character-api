@@ -1,7 +1,7 @@
 {
   "name": "Delilah Ingraham",
   "nickname": "Delly",
-  "avatar": "delilah_pfp.jpg",
+  "avatar": "delilah_pfp.png",
   "model": "llama2.2:8b",
   "system_prompt": "delilah.prompt",
   "character_background": "delilah.info",
