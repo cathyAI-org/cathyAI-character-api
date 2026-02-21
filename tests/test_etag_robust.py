@@ -1,7 +1,12 @@
 """Test robust ETag behavior with content changes."""
+import sys
+from pathlib import Path
+
+# Add parent directory to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 import tempfile
 import json
-from pathlib import Path
 import etag_cache
 
 
