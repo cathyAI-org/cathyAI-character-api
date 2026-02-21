@@ -3,14 +3,12 @@ from fastapi.responses import FileResponse
 from pathlib import Path
 import json
 import os
-import hashlib
 from typing import Any, Literal
+import etag_cache
 
 app = FastAPI(title="cathyAI Characters API", version="1.0.0")
 
 # ---- Paths for your new repo layout ----
-REPO_ROOT = Path(__file__).resolve().parent
-
 CHAR_DIR = Path(os.getenv("CHAR_DIR", "/app/characters"))
 PROMPT_DIR = Path(os.getenv("PROMPT_DIR", str(CHAR_DIR / "system_prompt")))
 INFO_DIR = Path(os.getenv("INFO_DIR", str(CHAR_DIR / "character_info")))
@@ -74,10 +72,11 @@ def maybe_resolve_file(value: Any, directory: Path) -> str:
     """
     if not isinstance(value, str) or not value.strip():
         return ""
-    candidate = directory / value.strip()
-    if candidate.exists() and candidate.is_file():
+    raw = value.strip()
+    candidate = etag_cache.safe_resolve(directory, raw)
+    if candidate and candidate.exists() and candidate.is_file():
         return candidate.read_text(encoding="utf-8").strip()
-    return value.strip()
+    return raw
 
 
 def dedupe_case_insensitive(items: list[str]) -> list[str]:
@@ -149,71 +148,6 @@ def attach_avatar_url(data: dict[str, Any]) -> None:
     else:
         data["avatar_url"] = None
 
-
-def file_fingerprint(path: Path) -> str:
-    """Generate stable fingerprint based on file mtime and size.
-    
-    :param path: Path to file
-    :type path: Path
-    :return: Fingerprint string
-    :rtype: str
-    """
-    try:
-        st = path.stat()
-        return f"{path.name}:{int(st.st_mtime)}:{st.st_size}"
-    except FileNotFoundError:
-        return f"{path.name}:missing"
-
-
-def compute_character_etag(char_path: Path, data: dict[str, Any]) -> str:
-    """Compute ETag for character including referenced files.
-    
-    :param char_path: Path to character JSON file
-    :type char_path: Path
-    :param data: Character configuration data
-    :type data: dict[str, Any]
-    :return: ETag value with quotes
-    :rtype: str
-    """
-    parts = [file_fingerprint(char_path)]
-
-    sp = data.get("system_prompt")
-    if isinstance(sp, str) and sp.strip():
-        candidate = PROMPT_DIR / sp.strip()
-        if candidate.exists() and candidate.is_file():
-            parts.append(file_fingerprint(candidate))
-
-    bg = data.get("character_background")
-    if isinstance(bg, str) and bg.strip():
-        candidate = INFO_DIR / bg.strip()
-        if candidate.exists() and candidate.is_file():
-            parts.append(file_fingerprint(candidate))
-
-    matrix = data.get("matrix")
-    if isinstance(matrix, dict):
-        ar = matrix.get("append_rules")
-        if isinstance(ar, str) and ar.strip():
-            candidate = PROMPT_DIR / ar.strip()
-            if candidate.exists() and candidate.is_file():
-                parts.append(file_fingerprint(candidate))
-
-    raw = "|".join(parts).encode("utf-8")
-    digest = hashlib.sha256(raw).hexdigest()
-    return f'"{digest}"'
-
-
-def compute_char_list_etag() -> str:
-    """Compute ETag for character list based on all JSON files.
-    
-    :return: ETag value with quotes
-    :rtype: str
-    """
-    parts = []
-    for f in sorted(CHAR_DIR.glob("*.json")):
-        parts.append(file_fingerprint(f))
-    raw = "|".join(parts).encode("utf-8")
-    digest = hashlib.sha256(raw).hexdigest()
-    return f'"{digest}"'
 
 
 def resolve_character(data: dict[str, Any], char_id: str) -> dict[str, Any]:
@@ -287,7 +221,7 @@ def list_characters(req: Request, response: Response):
     if not CHAR_DIR.exists():
         raise HTTPException(500, f"Character directory not found: {CHAR_DIR}")
 
-    etag = compute_char_list_etag()
+    etag = etag_cache.compute_list_etag(CHAR_DIR, AVATAR_DIR)
     response.headers["ETag"] = etag
 
     inm = req.headers.get("if-none-match")
@@ -353,7 +287,7 @@ def get_character(
 
     data = read_json(f)
 
-    etag = compute_character_etag(f, data)
+    etag = etag_cache.compute_etag(f, data, view, PROMPT_DIR, INFO_DIR, AVATAR_DIR)
     response.headers["ETag"] = etag
 
     inm = req.headers.get("if-none-match")
@@ -406,7 +340,7 @@ def get_avatar(filename: str, req: Request, response: Response):
     if not p.exists() or not p.is_file():
         raise HTTPException(404, "Avatar not found")
 
-    etag = f'"{file_fingerprint(p)}"'
+    etag = etag_cache.compute_avatar_etag(p)
     response.headers["ETag"] = etag
 
     inm = req.headers.get("if-none-match")

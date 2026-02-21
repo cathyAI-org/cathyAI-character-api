@@ -6,7 +6,8 @@ FastAPI service for managing and serving character configurations, prompts, and 
 
 - RESTful API for character data
 - File-based prompt resolution
-- Avatar serving with ETag caching
+- Content-based ETag caching (SHA-256) with metadata validation
+- Separate ETags for public/private views
 - Optional API key authentication
 - Docker support
 
@@ -40,6 +41,14 @@ Environment variables (see `.env.template`):
 - `PROMPT_DIR` - System prompts directory (default: `/app/characters/system_prompt`)
 - `INFO_DIR` - Character info directory (default: `/app/characters/character_info`)
 - `AVATAR_DIR` - Avatar images directory (default: `/app/public/avatars`)
+
+## ETag Caching
+
+ETags use SHA-256 content hashing with intelligent caching:
+- Detects same-size file changes
+- Caches digests using `mtime_ns + size + inode + dev`
+- Public/private views have different ETags
+- Includes all referenced files (prompts, info, avatars)
 
 ## Testing
 
