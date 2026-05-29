@@ -7,16 +7,15 @@
   "avatar": "",
   "aliases": [
     "Assistant",
-    "AI",
+    "AI"
   ],
   "system_prompt": "assistant.prompt",
   "character_background": "assistant.info",
   "matrix": {
     "aliases": [
       "Assistant",
-      "AI",
+      "AI"
     ],
     "append_rules": "matrix_default_rules.prompt"
   }
 }
-EOF
