@@ -1,0 +1,21 @@
+{
+  "id": "assistant",
+  "name": "Assistant",
+  "nickname": "Assistant",
+  "model": "qwen3:8b",
+  "greeting": "Hi, I’m ready. What would you like help with?",
+  "avatar": "",
+  "aliases": [
+    "Assistant",
+    "AI"
+  ],
+  "system_prompt": "assistant.prompt",
+  "character_background": "assistant.info",
+  "matrix": {
+    "aliases": [
+      "Assistant",
+      "AI"
+    ],
+    "append_rules": "matrix_default_rules.prompt"
+  }
+}
