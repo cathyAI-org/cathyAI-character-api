@@ -1,4 +1,3 @@
-cat > characters/assistant.json <<'EOF'
 {
   "id": "assistant",
   "name": "Assistant",
